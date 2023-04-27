@@ -1,6 +1,18 @@
+using FileBrowser;
 using FileBrowser.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+
+
+/* **************** DEV MODE FOR IIS CONFIG *******************************************
+    <aspNetCore processPath=".\FileBrowser.exe" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" hostingModel="inprocess" >
+	   <environmentVariables>
+        <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Development" />
+      </environmentVariables>
+	  </aspNetCore>
+ */
+
+Users.init();
 
 var builder = WebApplication.CreateBuilder(args);
 

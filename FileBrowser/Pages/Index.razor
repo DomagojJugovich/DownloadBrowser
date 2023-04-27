@@ -7,96 +7,141 @@
 
 
 <h1 style="font-family:Impact">Argosy download</h1>
-<p>Preuzimanje verzije za Octopus Offline Drop :</p>
+<p>Preuzimanje verzije za Octopus Offline Drop , za korisnika @user</p>
 
-@if (files == null)
+@if (user == null)
 {
-    <p><em>Loading...</em></p>
+    <div class="container">
+        <label for="uname"><b>Username</b></label>
+        <input @bind="huser" type="text" placeholder="Username" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input @bind="hpass" type="password" placeholder="Password" required>
+
+        <button style="width:150px" @onclick="Login">Login</button>
+        <br/>
+        <label style="color:red;font-weight:bold">@message</label>
+    </div>
 }
 else
-{
-    <table style="background: #0dcaf0;">
-        <tbody>
-            <tr><td colspan="2" style="font-family: Impact, sans-serif;color:white;font-size: x-large;">PRODUKCIJA : </td></tr>
-            <tr >
-                <td widht="20px"></td>
-                @foreach (var file in lastVersionsPROD)
-                {
-                    <td style="background : #AADDFF;padding: 20px;"> <a style="font-family: Impact, sans-serif;text-decoration:none" href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
+{  if (!(files.Count() == 0))
+    {
+        <table style="background: #0dcaf0;">
+            <tbody>
+                <tr><td colspan="2" style="font-family: Impact, sans-serif;color:white;font-size: x-large;">PRODUKCIJA : </td></tr>
+                <tr >
                     <td widht="20px"></td>
-                }
-             </tr>
-
-             <tr > <td height="20px"></td> </tr>
-
-            <tr><td colspan="2" style="font-family: Impact, sans-serif;color:white;font-size: x-large;">TEST : </td></tr>
-             <tr>
-                <td widht="20px"></td>
-                @foreach (var file in lastVersionsTEST)
-                {
-                    <td style="background : #DDEEFF;padding: 20px;"> <a style="font-family: Impact, sans-serif;text-decoration:none" href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
-                    <td width="20px"></td>
-                }
-             </tr>
-
-            <tr> <td height="20px"></td> </tr>
-        </tbody>
-    </table>
-    <br />
-    <br />
-    <br />
-    <table style="font-family:Courier" >
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var file in files)
-            {
-                <tr>
-                    <td><a href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
-                    <td> @File.GetLastAccessTime(file) </td>
+                    @foreach (var file in lastVersionsPROD)
+                    {
+                        <td style="background : #AADDFF;padding: 20px;"> <a style="font-family: Impact, sans-serif;text-decoration:none" href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
+                        <td widht="20px"></td>
+                    }
                 </tr>
-            }
-        </tbody>
-    </table>
+
+                <tr > <td height="20px"></td> </tr>
+
+                <tr><td colspan="2" style="font-family: Impact, sans-serif;color:white;font-size: x-large;">TEST : </td></tr>
+                <tr>
+                    <td widht="20px"></td>
+                    @foreach (var file in lastVersionsTEST)
+                    {
+                        <td style="background : #DDEEFF;padding: 20px;"> <a style="font-family: Impact, sans-serif;text-decoration:none" href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
+                        <td width="20px"></td>
+                    }
+                </tr>
+
+                <tr> <td height="20px"></td> </tr>
+            </tbody>
+        </table>
+        <br />
+        <br />
+        <br />
+        <table style="font-family:Courier" >
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var file in files)
+                {
+                    <tr>
+                        <td><a href="packages/@System.IO.Path.GetFileName(file)">@System.IO.Path.GetFileName(file)</a> </td>
+                        <td> @File.GetLastAccessTime(file) </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } else
+    {
+        <p><em>No files found...</em></p>
+    }
 }
 
 @code {
+    private string huser = null;
+    private string hpass = null;
+    private string user = null;
+    private string message = "";
     private IEnumerable<String>? files;
     private List<String> lastVersionsPROD;
     private List<String> lastVersionsTEST;
 
-    protected override void OnInitialized()
+    //protected override void OnInitialized()
+    //{ }
+
+    private void Login()
     {
+        lastVersionsPROD = new List<string>();
+        lastVersionsTEST = new List<string>();
+
+
+        if ( Users.checkUser(huser.ToUpper(), hpass) ) { 
+            user = huser.ToUpper().Trim();
+        } else
+        {
+            message = "Username and password not correct !";
+            return;
+        }
+
+
         files = FolderService.GetFiles();
+        if (files.Count<String>() > 2)
+        {
+            files = files.Where(x => x.Contains(user + "-")).OrderBy(p => p);
+
+            if (!(files.Count<String>() > 2)) return;
+
+        } else
+        {
+            return;
+        }
 
         //find last versions
         //MORH-TEST-Argosy-2023.4.21.2-REL-6.zip
 
-        lastVersionsPROD = new List<string>();
-        lastVersionsTEST = new List<string>();
 
         //last Argosy
-        var filteredList = files.Where(x => x.Contains("-PRODUKCIJA-Argosy-")).OrderBy(p => p);
+        var filteredList = files.Where(x => x.Contains(user + "-PRODUKCIJA-Argosy-")).OrderBy(p => p);
         lastVersionsPROD.Add(filteredList.Last());
-        filteredList = files.Where(x => x.Contains("-TEST-Argosy-")).OrderBy(p => p);
+        filteredList = files.Where(x => x.Contains(user + "-TEST-Argosy-")).OrderBy(p => p);
         lastVersionsTEST.Add(filteredList.Last());
 
         //last WebArgosy
-        filteredList = files.Where(x => x.Contains("-PRODUKCIJA-WebArgosyS2S-")).OrderBy(p => p);
+        filteredList = files.Where(x => x.Contains(user + "-PRODUKCIJA-WebArgosyS2S-")).OrderBy(p => p);
         lastVersionsPROD.Add(filteredList.Last());
-        filteredList = files.Where(x => x.Contains("-TEST-WebArgosyS2S-")).OrderBy(p => p);
+        filteredList = files.Where(x => x.Contains(user + "-TEST-WebArgosyS2S-")).OrderBy(p => p);
         lastVersionsTEST.Add(filteredList.Last());
 
         //last Int Serv
-        filteredList = files.Where(x => x.Contains("-PRODUKCIJA-IntegracijskiServis-")).OrderBy(p => p);
+        filteredList = files.Where(x => x.Contains(user + "-PRODUKCIJA-IntegracijskiServis-")).OrderBy(p => p);
         lastVersionsPROD.Add(filteredList.Last());
-        filteredList = files.Where(x => x.Contains("-TEST-IntegracijskiServis-")).OrderBy(p => p);
+        filteredList = files.Where(x => x.Contains(user + "-TEST-IntegracijskiServis-")).OrderBy(p => p);
         lastVersionsTEST.Add(filteredList.Last());
 
 
     }
+
+ 
 }

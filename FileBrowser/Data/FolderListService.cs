@@ -14,7 +14,7 @@ namespace FileBrowser.Data
             rootpath =  System.IO.Path.Combine(rootpath, "wwwroot");
             rootpath =  System.IO.Path.Combine(rootpath, "packages");
 
-            return Directory. EnumerateFiles(rootpath);
+            return Directory.EnumerateFiles(rootpath);
         
         }
     }
