@@ -14,7 +14,8 @@ using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Users.init(builder.Configuration);
+var appSettingsPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.json");
+Users.init(builder.Configuration, appSettingsPath);
 
 // Add services to the container.
 builder.Services.AddRazorPages();

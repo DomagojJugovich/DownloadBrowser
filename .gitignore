@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# FileBrowser Data Protection key ring (used to encrypt UserCredentials in appsettings.json)
+FileBrowser/keys/
+**/keys/
