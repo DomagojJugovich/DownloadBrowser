@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Components.Web;
 	  </aspNetCore>
  */
 
-Users.init();
-
 var builder = WebApplication.CreateBuilder(args);
+
+Users.init(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
